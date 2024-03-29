@@ -1,0 +1,34 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html"
+     data-sly-call="${clientLib.all @ categories='apps.task.search'}"></sly>
+<div class="search-component">
+  <div class="links-search">LINKS SEARCH</div>
+  <form class="search-form">
+    <div class="form-group">
+      <label for="search-link">SEARCH LINK:</label>
+      <div class="input-group">
+        <input type="text" value="${properties.initialPath}" id="search-link" class="form-control" data-validation="url" required>
+        <button type="submit" class="btn btn-primary" disabled>Submit</button>
+      </div>
+      <div class="validation-error-message" hidden>${properties.errorMessage}</div>
+    </div>
+  </form>
+  <div class="success-message" hidden>${properties.successMessage}</div>
+  <div class="search-results">
+    <table>
+      <thead>
+      <tr>
+        <th>Link URL</th>
+        <th>Node Path</th>
+      </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="no-results" hidden>${properties.noResultsMessage}</div>
+    <div class="pagination">
+      <button class="prev-page">&laquo; Prev</button>
+      <span class="page-num">Page <span class="current-page">1</span> of <span class="total-pages">1</span></span>
+      <button class="next-page">Next &raquo;</button>
+    </div>
+  </div>
+</div>
