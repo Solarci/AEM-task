@@ -2,6 +2,8 @@ $(document).ready(function() {
     $('.search-results tbody').empty();
     var currentPage = 1;
     var totalPages = 1;
+    var searchPathElement = document.querySelector('[search-path]');
+    var searchPath = searchPathElement ? searchPathElement.getAttribute('search-path') : '/content/project';
 
     $('#search-link').on('input', function() {
         var isValid = validateUrl($(this).val());
@@ -18,9 +20,10 @@ $(document).ready(function() {
     $('.search-form').on('submit', function(e) {
         $('.search-results tbody').empty();
         e.preventDefault();
-        var searchPath = $('#search-link').val();
+        var link = $('#search-link').val();
+
         currentPage = 1;
-        searchLinks(searchPath, currentPage);
+        searchLinks(link, currentPage);
     });
 
 
@@ -31,19 +34,19 @@ $(document).ready(function() {
             '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
             '(\\?[;&a-z\\d%_.~+=-]*)?' +
             '(\\#[-a-z\\d_]*)?$', 'i');
-        return pattern.test(url) && url.startsWith("https://www.task.com");
+        return pattern.test(url) && url.startsWith("https://www.project.com");
     }
 
 
     function loadPage(page) {
-        var searchPath = $('#search-link').val();
-        searchLinks(searchPath, page);
+        var link = $('#search-link').val();
+        searchLinks(link, page);
     }
 
-    function searchLinks(searchPath, page) {
+    function searchLinks(link, page) {
         $('.search-results tbody').empty();
         $.ajax({
-            url: '/bin/myproject/searchlinks.json?path=' + searchPath + '&page=' + page,
+            url: '/bin/myproject/searchlinks.json?path=' + searchPath + '&page=' + page + '&link=' + link,
             type: 'GET',
             dataType: 'json',
 

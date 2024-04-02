@@ -1,13 +1,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html"
-     data-sly-call="${clientLib.all @ categories='apps.task.search'}"></sly>
+     data-sly-call="${clientLib.all @ categories='apps.project.search'}"></sly>
 <div class="search-component">
+  <div search-path="${properties.searchPath}"></div>
   <div class="links-search">LINKS SEARCH</div>
   <form class="search-form">
     <div class="form-group">
       <label for="search-link">SEARCH LINK:</label>
       <div class="input-group">
-        <input type="text" value="${properties.initialPath}" id="search-link" class="form-control" data-validation="url" required>
+        <input type="text" id="search-link" class="form-control" data-validation="url" required>
         <button type="submit" class="btn btn-primary" disabled>Submit</button>
       </div>
       <div class="validation-error-message" hidden>${properties.errorMessage}</div>

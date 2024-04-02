@@ -3,4 +3,4 @@
           jcr:primaryType="cq:Component"
           jcr:title="Search Component"
           allowedParents="[*/parsys]"
-          componentGroup="Task - General"/>
+          componentGroup="Project - General"/>

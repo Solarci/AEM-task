@@ -1,6 +1,5 @@
-package main.java.com.task.osgi.servlets;
+package main.java.com.project.osgi.servlets;
 
-import acscommons.com.google.common.collect.Iterators;
 import com.day.cq.wcm.api.Page;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -21,11 +20,13 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+
 @Component(service = Servlet.class, property = {
-        ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/myproject/searchlinks",
+        ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/project/searchlinks",
         ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
 })
 public class SearchLinksServlet extends SlingSafeMethodsServlet {
@@ -33,67 +34,74 @@ public class SearchLinksServlet extends SlingSafeMethodsServlet {
     private static final String PATH_PARAMETER = "path";
     private static final String URL_PARAMETER = "url";
     private static final String PAGE_PARAMETER = "page";
-    private static final String DATA_PARAMETER = "data";
+    private static final String LINK_PARAMETER = "link";
     private static final int PAGE_SIZE = 2;
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
+    @Reference
+    private SearchLinksService searchLinksService;
+
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        String path = request.getParameter(PATH_PARAMETER);
+        String searchPath = request.getParameter(PATH_PARAMETER);
         int page = Integer.parseInt(request.getParameter(PAGE_PARAMETER));
-        if (StringUtils.isEmpty(path) || page <= 0) {
+        if (StringUtils.isEmpty(searchPath) || page <= 0) {
             response.setStatus(SlingHttpServletResponse.SC_BAD_REQUEST);
             return;
         }
+
         try (ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver(null)) {
-            Resource searchResource = resourceResolver.resolve(path);
+            Resource searchResource = resourceResolver.resolve(searchPath);
             if (ResourceUtil.isNonExistingResource(searchResource)) {
                 response.setStatus(SlingHttpServletResponse.SC_NOT_FOUND);
-                LOGGER.info(MessageFormat.format("Resource not found: {0}", path));
+                LOGGER.info(MessageFormat.format("Resource not found: {0}", searchPath));
                 return;
             }
-            JSONArray jsonArray = new JSONArray();
             Page pageObj = searchResource.adaptTo(Page.class);
             if (Objects.isNull(pageObj)) {
                 response.setStatus(SlingHttpServletResponse.SC_NOT_FOUND);
-                LOGGER.info(MessageFormat.format("Page not found: {0}", path));
+                LOGGER.info(MessageFormat.format("Page not found: {0}", searchPath));
+                return;
+            }
+            String link = request.getParameter(LINK_PARAMETER);
+
+            if (StringUtils.isEmpty(link)) {
+                response.setStatus(SlingHttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
-            Iterator<Page> children = pageObj.listChildren();
+            List<Link> links = searchLinksService.searchLinksRecursively(searchResource, link, new ArrayList<>());
+
             int count = 0;
             int startIndex = (page - 1) * PAGE_SIZE;
             int endIndex = page * PAGE_SIZE;
-            int totalChildren = Iterators.size(pageObj.listChildren());
+            int totalChildren = links.size();
             int totalPages = (int) Math.ceil((double) totalChildren / PAGE_SIZE);
 
-            while (children.hasNext() && count < endIndex) {
-                Page child = children.next();
+            JSONArray jsonArray = new JSONArray();
+            while (count < links.size() && count < endIndex) {
                 if (count >= startIndex) {
-                    String childPath = child.getPath();
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put(URL_PARAMETER, resourceResolver.map(childPath));
-                    jsonObject.put(PATH_PARAMETER, childPath);
+                    jsonObject.put(URL_PARAMETER, links.get(count).getUrl());
+                    jsonObject.put(PATH_PARAMETER, links.get(count).getPath());
                     jsonArray.put(jsonObject);
                 }
                 count++;
             }
 
-            JSONObject jsonResponse = new JSONObject();
             response.setHeader("X-Total-Pages", String.valueOf(totalPages));
-            jsonResponse.put(DATA_PARAMETER, jsonArray);
             response.setContentType("application/json");
             response.getWriter().print(jsonArray);
 
         } catch (LoginException e) {
             response.setStatus(SlingHttpServletResponse.SC_BAD_REQUEST);
-            LOGGER.warn(MessageFormat.format("Unable to obtain resource resolver: {0} ", path));
+            LOGGER.warn(MessageFormat.format("Unable to obtain resource resolver: {0} ", searchPath));
 
         } catch (JSONException e) {
             response.setStatus(SlingHttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            LOGGER.warn(MessageFormat.format("Error occurred during parsing from JSON: {0} ", path));
+            LOGGER.warn(MessageFormat.format("Error occurred during parsing from JSON: {0} ", searchPath));
         }
     }
 }
