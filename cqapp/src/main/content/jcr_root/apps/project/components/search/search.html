@@ -1,35 +1,44 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
 <sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html"
      data-sly-call="${clientLib.all @ categories='apps.project.search'}"></sly>
 <div class="search-component">
-  <div search-path="${properties.searchPath}"></div>
-  <div class="links-search">LINKS SEARCH</div>
-  <form class="search-form">
-    <div class="form-group">
-      <label for="search-link">SEARCH LINK:</label>
-      <div class="input-group">
-        <input type="text" id="search-link" class="form-control" data-validation="url" required>
-        <button type="submit" class="btn btn-primary" disabled>Submit</button>
-      </div>
-      <div class="validation-error-message" hidden>${properties.errorMessage}</div>
+    <div search-path="${properties.searchPath}"></div>
+    <h2 class="links-search">LINKS SEARCH</h2>
+    <form class="search-form">
+        <div class="form-group">
+            <label for="search-link">SEARCH LINK:</label>
+            <div class="input-group">
+                <input type="text" id="search-link" class="form-control" data-validation="url" required>
+                <button type="submit" class="btn btn-primary" disabled>Submit</button>
+            </div>
+            <div class="validation-error-message" hidden>${properties.errorMessage}</div>
+        </div>
+    </form>
+    <div class="success-message" hidden>${properties.successMessage}<sly data-sly-test="${properties.linksQuantity}"><span class="total-links">0</span></sly></div>
+    <div class="search-results">
+        <table>
+            <thead>
+            <tr>
+                <th>Link URL</th>
+                <th>Node Path</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="no-results" hidden>${properties.noResultsMessage}</div>
+        <div class="pagination">
+            <button class="prev-page">&laquo; Prev</button>
+            <span class="page-num">Page <span class="current-page">1</span> of <span class="total-pages">1</span></span>
+            <button class="next-page">Next &raquo;</button>
+        </div>
     </div>
-  </form>
-  <div class="success-message" hidden>${properties.successMessage}</div>
-  <div class="search-results">
-    <table>
-      <thead>
-      <tr>
-        <th>Link URL</th>
-        <th>Node Path</th>
-      </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div class="no-results" hidden>${properties.noResultsMessage}</div>
-    <div class="pagination">
-      <button class="prev-page">&laquo; Prev</button>
-      <span class="page-num">Page <span class="current-page">1</span> of <span class="total-pages">1</span></span>
-      <button class="next-page">Next &raquo;</button>
-    </div>
-  </div>
 </div>
+</body>
+</html>

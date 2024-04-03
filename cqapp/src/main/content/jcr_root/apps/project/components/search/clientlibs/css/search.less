@@ -4,22 +4,20 @@
     border-radius: 10px;
 }
 
-.search-link{
-    font-size:20px;
+.search-link {
+    font-size: 20px;
 }
 
 .links-search {
     font-weight: bold;
-    font-size:30px;
-    font-color:black;
-    padding-bottom:20px;
-
+    font-size: 30px;
+    color: black;
+    padding-bottom: 20px;
 }
 
 .input-group {
     display: flex;
-    padding-bottom:20px;
-
+    padding-bottom: 20px;
 }
 
 .form-control {
@@ -36,48 +34,46 @@
     background-color: black;
     color: white;
     border-color: black;
-}
-
-.btn:disabled {
-    background-color: grey;
-    color: black;
-    border-color: grey;
+    &:disabled {
+        background-color: grey;
+        color: black;
+        border-color: grey;
+    }
 }
 
 table, td, th {
-  border: 1px solid;
+    border: 1px solid;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align:left;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
 }
 
 .invalid {
     color: red;
 }
 
-.validation-error-message{
+.validation-error-message {
     color: red;
     font-style: italic;
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     left: 0;
-    font-size:10px;
-
+    font-size: 10px;
+    display: none;
 }
 
 .form-group {
     position: relative;
-}
-
-.form-control.is-invalid + .validation-error-message {
-    display: block;
+    .form-control.is-invalid + .validation-error-message {
+        display: block;
+    }
 }
 
 .success-message {
-    font-size:15px;
-    font-color:black;
-    padding-bottom:10px;
+    font-size: 15px;
+    color: black;
+    padding-bottom: 10px;
 }

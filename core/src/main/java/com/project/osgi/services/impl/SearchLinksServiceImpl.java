@@ -7,7 +7,10 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,9 +27,7 @@ public class SearchLinksServiceImpl implements SearchLinksService {
     @Override
     public List<Link> searchLinksRecursively(Resource parentResource, String link, List<Link> links) {
         if (parentResource != null) {
-            Iterator<Resource> children = parentResource.listChildren();
-            while (children.hasNext()) {
-                Resource child = children.next();
+            for (Resource child : parentResource.getChildren()) {
                 links.addAll(searchLinksUnderComponent(child, link));
                 searchLinksRecursively(child, link, links);
             }
@@ -54,5 +55,4 @@ public class SearchLinksServiceImpl implements SearchLinksService {
         }
         return linksUnderComponent;
     }
-
 }

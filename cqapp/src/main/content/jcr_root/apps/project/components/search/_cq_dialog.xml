@@ -50,6 +50,12 @@
                                                     fieldLabel="Success Message"
                                                     name="./successMessage"
                                                     value="Links found:"/>
+                                            <links-quantity
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/foundation/form/checkbox"
+                                                    name="./linksQuantity"
+                                                    text="Enable links quantity"
+                                                    value="{Boolean}true"/>
                                         </items>
                                     </column>
                                 </items>

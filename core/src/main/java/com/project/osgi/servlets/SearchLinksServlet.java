@@ -1,6 +1,8 @@
 package main.java.com.project.osgi.servlets;
 
 import com.day.cq.wcm.api.Page;
+import main.java.com.project.osgi.services.SearchLinksService;
+import main.java.com.project.osgi.util.Link;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -19,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -56,13 +57,13 @@ public class SearchLinksServlet extends SlingSafeMethodsServlet {
             Resource searchResource = resourceResolver.resolve(searchPath);
             if (ResourceUtil.isNonExistingResource(searchResource)) {
                 response.setStatus(SlingHttpServletResponse.SC_NOT_FOUND);
-                LOGGER.info(MessageFormat.format("Resource not found: {0}", searchPath));
+                LOGGER.info("Resource not found: {}", searchPath);
                 return;
             }
             Page pageObj = searchResource.adaptTo(Page.class);
             if (Objects.isNull(pageObj)) {
                 response.setStatus(SlingHttpServletResponse.SC_NOT_FOUND);
-                LOGGER.info(MessageFormat.format("Page not found: {0}", searchPath));
+                LOGGER.info("Page not found: {}", searchPath);
                 return;
             }
             String link = request.getParameter(LINK_PARAMETER);
@@ -77,8 +78,8 @@ public class SearchLinksServlet extends SlingSafeMethodsServlet {
             int count = 0;
             int startIndex = (page - 1) * PAGE_SIZE;
             int endIndex = page * PAGE_SIZE;
-            int totalChildren = links.size();
-            int totalPages = (int) Math.ceil((double) totalChildren / PAGE_SIZE);
+            int totalLinks = links.size();
+            int totalPages = totalLinks > 0 ? (int) Math.ceil((double) totalLinks / PAGE_SIZE) : 1;
 
             JSONArray jsonArray = new JSONArray();
             while (count < links.size() && count < endIndex) {
@@ -92,16 +93,17 @@ public class SearchLinksServlet extends SlingSafeMethodsServlet {
             }
 
             response.setHeader("X-Total-Pages", String.valueOf(totalPages));
+            response.setHeader("X-Total-Links", String.valueOf(totalLinks));
             response.setContentType("application/json");
             response.getWriter().print(jsonArray);
 
         } catch (LoginException e) {
             response.setStatus(SlingHttpServletResponse.SC_BAD_REQUEST);
-            LOGGER.warn(MessageFormat.format("Unable to obtain resource resolver: {0} ", searchPath));
+            LOGGER.warn("Unable to obtain resource resolver: {} ", searchPath);
 
         } catch (JSONException e) {
             response.setStatus(SlingHttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            LOGGER.warn(MessageFormat.format("Error occurred during parsing from JSON: {0} ", searchPath));
+            LOGGER.warn("Error occurred during parsing from JSON: {} ", searchPath);
         }
     }
 }
