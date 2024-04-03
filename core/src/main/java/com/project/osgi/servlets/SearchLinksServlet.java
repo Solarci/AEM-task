@@ -36,7 +36,9 @@ public class SearchLinksServlet extends SlingSafeMethodsServlet {
     private static final String URL_PARAMETER = "url";
     private static final String PAGE_PARAMETER = "page";
     private static final String LINK_PARAMETER = "link";
-    private static final int PAGE_SIZE = 2;
+    private static final String PAGE_SIZE_PARAMETER = "pageSize";
+    private static final int DEFAULT_PAGE_SIZE = 2;
+    private static final int DEFAULT_PAGE_VALUE = 1;
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
@@ -44,15 +46,16 @@ public class SearchLinksServlet extends SlingSafeMethodsServlet {
     @Reference
     private SearchLinksService searchLinksService;
 
+
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
         String searchPath = request.getParameter(PATH_PARAMETER);
-        int page = Integer.parseInt(request.getParameter(PAGE_PARAMETER));
+        int page = NumberUtils.toInt(request.getParameter(PAGE_PARAMETER), DEFAULT_PAGE_VALUE);
         if (StringUtils.isEmpty(searchPath) || page <= 0) {
             response.setStatus(SlingHttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-
+        int pageSize = NumberUtils.toInt(request.getParameter(PAGE_SIZE_PARAMETER), DEFAULT_PAGE_SIZE);
         try (ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver(null)) {
             Resource searchResource = resourceResolver.resolve(searchPath);
             if (ResourceUtil.isNonExistingResource(searchResource)) {
@@ -76,10 +79,10 @@ public class SearchLinksServlet extends SlingSafeMethodsServlet {
             List<Link> links = searchLinksService.searchLinksRecursively(searchResource, link, new ArrayList<>());
 
             int count = 0;
-            int startIndex = (page - 1) * PAGE_SIZE;
-            int endIndex = page * PAGE_SIZE;
+            int startIndex = (page - 1) * pageSize;
+            int endIndex = page * pageSize;
             int totalLinks = links.size();
-            int totalPages = totalLinks > 0 ? (int) Math.ceil((double) totalLinks / PAGE_SIZE) : 1;
+            int totalPages = totalLinks > 0 ? (int) Math.ceil((double) totalLinks / pageSize) : 1;
 
             JSONArray jsonArray = new JSONArray();
             while (count < links.size() && count < endIndex) {

@@ -54,8 +54,13 @@
                                                     jcr:primaryType="nt:unstructured"
                                                     sling:resourceType="granite/ui/components/foundation/form/checkbox"
                                                     name="./linksQuantity"
-                                                    text="Enable links quantity"
-                                                    value="{Boolean}true"/>
+                                                    text="Enable links quantity"/>
+                                            <page-size
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+                                                    fieldLabel="Page Size"
+                                                    name="./pageSize"
+                                                    required="{Boolean}true"/>
                                         </items>
                                     </column>
                                 </items>

@@ -3,6 +3,7 @@ $(document).ready(function() {
     let currentPage = 1;
     let totalPages = 1;
     const searchPath = $('[search-path]').attr('search-path') || '/content/project';
+    const pageSize = $('[page-size]').attr('page-size');
     const searchLinkInput = $('#search-link');
     const searchForm = $('.search-form');
     const validationErrorMessage = $('.validation-error-message');
@@ -85,7 +86,8 @@ $(document).ready(function() {
             data: {
                 path: searchPath,
                 page: page,
-                link: link
+                link: link,
+                pageSize: pageSize
             },
             type: 'GET',
             dataType: 'json',
